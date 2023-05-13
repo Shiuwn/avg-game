@@ -923,7 +923,7 @@ class NPC {
     return this._birthPercent
   }
   set 生育概率(val) {
-    this._birthPercent = Math.max(0, Math.min(0, val))
+    this._birthPercent = Math.max(0, Math.min(1, val))
   }
   get 姓名() {
     return this.姓氏 + this.行字 + this.名字
