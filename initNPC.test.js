@@ -1,5 +1,5 @@
 
-const { initNPCs, random } = require('./initNPC.js')
+const { initNPCs, random, Families } = require('./initNPC.js')
 const { createWriteStream } = require('node:fs')
 const { format } = require('node:util')
 
@@ -50,6 +50,22 @@ describe('生成npc', () => {
   it('年龄层数量-儿童14%', () => {
     const age = npcs.filter((npc) => npc.年龄 < 14)
     expect(age.length).toEqual(COUNT * 0.14 | 0)
+  })
+  /**for (const family in Families) {
+    it(`家世分布-${family} ${Families[family].ratio * 100}%`, () => {
+      const npcFamily = npcs.filter(npc => npc.家族.家世 === family)
+      expect(npcFamily.length).toEqual(Families[family].ratio * COUNT | 0)
+    })
+  }**/
+  it('家世总数', () => {
+
+    let count = 0
+    for (const family in Families) {
+
+      const npcFamily = npcs.filter(npc => npc.家族.家世 === family)
+      count += npcFamily.length
+    }
+    expect(count).toEqual(COUNT)
   })
 })
 
