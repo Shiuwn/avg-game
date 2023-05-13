@@ -558,6 +558,7 @@ function initNPCs() {
       giveHabit(npc)
       giveAmbition(npc)
       npc.updateHealth(true)
+      npc.updateBirth()
       if (npc.家族) return
       // 皇族 王族
       if (
@@ -689,7 +690,6 @@ const isString = (target) => isType('string', target)
 const isArray = (target) => isType('array', target)
 
 const Emitter = {
-  events: {},
   on(eventName, fn) {
     const event = (this.events[eventName] = this.events[eventName] || [])
     isFunction(fn) && event.push(fn)
@@ -722,6 +722,9 @@ const Emitter = {
       delete this.events[eventName]
     }
   },
+  init() {
+    this.events = {}
+  }
 }
 
 // 生成的所有的家族
@@ -896,20 +899,22 @@ class NPC {
     this.death = 0
     // 定时更新身份
     this.updateIdentityInner = () => { }
+    const emitter = this.emitter = Object.create(Emitter)
+    this.emitter.init()
 
-    Emitter.on('更新年龄', () => {
+    emitter.on('更新年龄', () => {
       this.updateHealth()
     })
 
-    Emitter.on('更新年龄', () => {
+    emitter.on('更新年龄', () => {
       this.updateOffense()
     })
 
-    Emitter.on('更新健康', () => {
+    emitter.on('更新健康', () => {
       this.updateDeath()
     })
 
-    Emitter.on('更新生育率', () => {
+    emitter.on('更新生育率', () => {
       this.updateBirth()
     })
     giveBirthday(this)
@@ -951,7 +956,7 @@ class NPC {
         })
       }
     }
-    Emitter.trigger('更新健康')
+    this.emitter.trigger('更新健康')
     return this
   }
 
@@ -976,7 +981,8 @@ class NPC {
       if (!this.death) {
         this.death = 0.1
       }
-      this.death += Math.floor((this.健康 - 60) / 10) * 0.15
+      this.death += Math.floor((60 - this.健康) / 10) * 0.15
+      this.death = +this.death.toFixed(2)
     }
   }
 
@@ -985,8 +991,8 @@ class NPC {
     Emitter.trigger('更新年龄')
   }
   updateBirth() {
+    const age = this.年龄
     if (this.性别 === '男') {
-      const age = this.年龄
       if (age >= 18 && age <= 35) {
         this._birthPercent = 1
       }
