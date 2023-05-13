@@ -581,6 +581,7 @@ function initNPCs() {
           if (FDis[key] > 0) {
             currentFamily.key = key
             currentFamily.count += FDis[key]
+            break
           }
         }
       }
@@ -588,6 +589,7 @@ function initNPCs() {
       const fKey = currentFamily.key
       const family = new Family()
       family.家世 = fKey
+      currentFamily.count--
       npc.家族 = family
       family.add(npc)
       const give = Families[fKey].give
@@ -3100,5 +3102,6 @@ const Habits = [
 
 module.exports = {
   initNPCs,
-  random
+  random,
+  Families
 }
