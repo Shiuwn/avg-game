@@ -754,6 +754,22 @@ class Family {
   }
 }
 
+// 拦截属性赋值不能低于0
+const createAttr = (attrs) => {
+  const newAttrs = Object.create(null)
+  for (const key in attrs) {
+    Object.defineProperty(newAttrs, key, {
+      get() {
+        return attrs[key]
+      },
+      set(val) {
+        attrs[key] = Math.max(0, val)
+      }
+    })
+  }
+  return newAttrs
+}
+
 const JobRankValue = [
   500, 1000, 1600, 2400, 3200, 4000, 6000, 8000, 1e4, 1.5e4, 2e4, 2.5e4, 3e4,
   4e4, 4.5e4, 5e4,
@@ -844,13 +860,13 @@ class NPC {
     }
     this['外貌'] = {}
     this['青睐'] = {}
-    this['属性'] = {
+    this['属性'] = createAttr({
       魅力: 0,
       统率: 0,
       敏锐: 0,
       经营: 0,
       智略: 0,
-    }
+    })
     this['技能'] = {
       礼仪: 0,
       口才: 0,

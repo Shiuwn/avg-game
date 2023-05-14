@@ -67,6 +67,15 @@ describe('生成npc', () => {
     }
     expect(count).toEqual(COUNT)
   })
+  it('属性值大于0', () => {
+    for (const npc of npcs) {
+      const attr = npc.属性
+      const keys = ['魅力', '统率', '敏锐', '经营', '智略']
+      for(const key of keys) {
+        expect(attr[key]).toBeGreaterThanOrEqual(0)
+      }
+    }
+  })
 })
 
 
