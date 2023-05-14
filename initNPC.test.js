@@ -67,15 +67,34 @@ describe('生成npc', () => {
     }
     expect(count).toEqual(COUNT)
   })
-  it('属性值大于0', () => {
-    for (const npc of npcs) {
+
+  for (const npc of npcs) {
+    it(`属性值大于0且不全为0-${npc.姓名}`, () => {
       const attr = npc.属性
       const keys = ['魅力', '统率', '敏锐', '经营', '智略']
-      for(const key of keys) {
+      for (const key of keys) {
         expect(attr[key]).toBeGreaterThanOrEqual(0)
       }
-    }
-  })
+      // 16岁之后有天赋特质
+      if (npc.年龄 >= 16) {
+        const notAll = keys.map((key) => attr[key]).some(d => d)
+        expect(notAll).toBeTruthy()
+      }
+    })
+    it(`天赋特质和性格特质-${npc.姓名}`, () => {
+      if (npc.年龄 >= 16) {
+        expect(npc.天赋特质.length).toBeGreaterThan(0)
+        expect(npc.性格特质.length).toBeGreaterThan(0)
+        // 7~16 有童年特质和性格特质
+      } else if (npc.年龄 >= 7) {
+        expect(npc.童年特质.length).toBeGreaterThan(0)
+        expect(npc.性格特质.length).toBeGreaterThan(0)
+      } else {
+        expect(npc.天赋特质.length).toEqual(0)
+        expect(npc.性格特质.length).toEqual(0)
+      }
+    })
+  }
 })
 
 

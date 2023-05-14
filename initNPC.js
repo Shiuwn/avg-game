@@ -487,7 +487,6 @@ function initNPCs() {
      */
 
     const giveChildhood = (npc) => {
-      if (!isChild(npc)) return
       const ch = CharacterGroup.童年特质
       randomCallback(ch, (character, key) => {
         character.give(npc)
