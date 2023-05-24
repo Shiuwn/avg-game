@@ -551,6 +551,14 @@ function initNPCs() {
       giveSkill(npc)
     }
 
+    let loyalFamilyDis = {
+      皇族: FDis['皇族'],
+      王族: FDis['王族']
+    }
+
+    delete FDis['皇族']
+    delete FDis['王族']
+
     // 生成家世和特质
     each(npcs, (_, /**@type {NPC} */ npc) => {
       giveNature(npc)
@@ -561,18 +569,18 @@ function initNPCs() {
       if (npc.家族) return
       // 皇族 王族
       if (
-        (FDis.皇族 || FDis.王族) &&
+        (loyalFamilyDis.皇族 || loyalFamilyDis.王族) &&
         npc.年龄 >= 18 &&
         npc.年龄 < 30 &&
         !npc.关系.恋人.配偶 &&
         !npc.家族
       ) {
-        const key = FDis.皇族 ? '皇族' : '王族'
+        const key = loyalFamilyDis.皇族 ? '皇族' : '王族'
         npc.家族 = new Family(genFId(), randomTake(BaseInfo.家名, 1)[0])
         npc.家族.家世 = key
         npc.家族.members.push(npc)
         Families[key].give(npc, key)
-        delete FDis[key]
+        delete loyalFamilyDis[key]
         giveTalent(npc)
         return
       }
@@ -2092,7 +2100,7 @@ const Jobs = (function () {
     '道士',
     '自由职业',
     '皇帝',
-    '君王',
+    '郡王',
     '赋闲',
   ]
   let job = {}
@@ -2176,6 +2184,7 @@ const Families = {
     give(npc, type) {
       familyBaseGive(npc, type)
       npc.职业 = '皇帝'
+      npc.先天特质.length = 0
       npc.先天特质.push('人神')
       each(npc.技能, function (key) {
         npc['技能'][key] = random({ min: 40, max: 80 })
@@ -3127,4 +3136,5 @@ module.exports = {
   random,
   randomTake,
   Families,
+  TalentGroup
 }
