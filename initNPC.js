@@ -103,7 +103,7 @@ const getParents = (/**@type {NPC} */ npc) => npc.关系.亲属.血缘亲属.父
 const getCouple = (/**@type {NPC} */ npc) => npc.关系.恋人.配偶
 
 const genId = (start) => () => start++
-const genNPCId = genId(100)
+const genNPCId = genId(1001)
 // 性别匹配
 /**
  *
@@ -261,6 +261,22 @@ const giveAmbition = (npc) => {
   }
 }
 
+
+/**
+ * 赋值关系型的数值
+ * @param {string} prop
+ * @param {number} value
+ * @param {string} defaultProp
+ * @param {NPC} npc1
+ * @param {NPC} npc2
+ */
+const addRelationVal = (prop, value, defaultProp, npc1, npc2) => {
+  const val1 = npc1[prop].get(npc2) || npc1[defaultProp] || 0
+  const val2 = npc2[prop].get(npc1) || npc2[defaultProp] || 0
+  npc1[prop].set(npc2, val1 + value)
+  npc2[prop].get(npc1, val2 + value)
+}
+
 function initNPCs() {
   const countNPC = 100
   const npcs = []
@@ -332,8 +348,13 @@ function initNPCs() {
         passed = Math.random() < 0.5
         if (passed && npc != currentNpc) {
           currentNpc.关系.友人.朋友.push(npc)
-          npc.基准友好度 += 60
-          currentNpc.基准友好度 += 60
+          // npc.基准友好度 += 60
+          // currentNpc.基准友好度 += 60
+          // const val1 = npc.基准友好度.get(currentNpc) || npc._基准友好度
+          // const val2 = currentNpc.基准友好度.get(npc) || currentNpc._基准友好度
+          // npc.基准友好度.set(currentNpc, val1 + 60)
+          // currentNpc.基准友好度.get(npc, val2 + 60)
+          addRelationVal('基准友好度', 60, '_基准友好度', npc, currentNpc)
         }
 
         // 10% 挚友
@@ -341,8 +362,10 @@ function initNPCs() {
           passed = Math.random() < 0.1
           if (passed && npc != currentNpc) {
             currentNpc.关系.友人.挚友 = npc
-            npc.基准友好度 += 200
-            currentNpc.基准友好度 += 200
+            // npc.基准友好度 += 200
+            // currentNpc.基准友好度 += 200
+
+            addRelationVal('基准友好度', 200, '_基准友好度', npc, currentNpc)
           }
         }
 
@@ -357,8 +380,9 @@ function initNPCs() {
           } else {
             currentNpc.关系.恋人.恋人.push(npc)
             npc.关系.恋人.恋人.push(npc)
-            currentNpc.爱慕值 += 60
-            npc.爱慕值 += 60
+            // currentNpc.爱慕值 += 60
+            // npc.爱慕值 += 60
+            addRelationVal('爱慕值', 60, '', npc, currentNpc)
           }
         }
 
@@ -367,8 +391,9 @@ function initNPCs() {
           passed = Math.random() < 0.1
           if (passed && npc !== currentNpc && matchGender(npc, currentNpc)) {
             currentNpc.关系.恋人.挚爱 = npc
-            currentNpc.爱慕值 += 200
-            npc.爱慕值 += 200
+            // currentNpc.爱慕值 += 200
+            // npc.爱慕值 += 200
+            addRelationVal('爱慕值', 200, '', npc, currentNpc)
           }
         }
 
@@ -788,7 +813,6 @@ class NPC {
     this.id = option.id || genNPCId()
     this['家族'] = null
     this['外貌'] = {}
-    this['角色ID'] = ''
     // 姓
     this['姓氏'] = option['姓氏']
     // 行字
@@ -822,10 +846,10 @@ class NPC {
     this['祭日'] = ''
     this['外貌偏好'] = ''
     this['性取向'] = '异性恋'
-    this['嫉妒值'] = 0
-    this['友情值'] = 0
-    this['爱慕值'] = 0
-    this['仇恨值'] = 0
+    this['嫉妒值'] = new WeakMap()
+    this['友情值'] = new WeakMap()
+    this['爱慕值'] = new WeakMap()
+    this['仇恨值'] = new WeakMap()
     this['关系'] = {
       亲属: {
         血缘亲属: {
@@ -892,7 +916,8 @@ class NPC {
     this['社交需求'] = ''
     this['相思需求'] = ''
     this['爱情衰减度'] = ''
-    this['基准友好度'] = 0
+    this['基准友好度'] = new Map()
+    this['_基准友好度'] = 0
     this['友好吸引力'] = 0
     this['爱情吸引力'] = 0
     this['倾向'] = {
@@ -940,6 +965,10 @@ class NPC {
     emitter.on('更新生育率', () => {
       this.updateBirth()
     })
+    // 死亡时触发
+    emitter.on('死亡', () => {
+
+    })
     giveBirthday(this)
   }
   get 生育概率() {
@@ -950,6 +979,10 @@ class NPC {
   }
   get 姓名() {
     return this.姓氏 + this.行字 + this.名字
+  }
+
+  get 角色ID() {
+    return this.id
   }
 
   // 性别更新
@@ -2067,7 +2100,7 @@ const CharacterGroup = {
         npc.健康 += 5
         npc.友好吸引力 += 10
         npc.爱情吸引力 += 10
-        npc.爱慕值 += 50
+        // npc.爱慕值 += 50
       },
     },
     命运之握: {
@@ -2077,7 +2110,7 @@ const CharacterGroup = {
        */
       give(npc) {
         npc.健康 += 5
-        npc.爱慕值 += 50
+        // npc.爱慕值 += 50
         npc.疾病抵御 += -0.1
       },
     },
@@ -2191,7 +2224,7 @@ const Families = {
       })
       npc.技能.礼仪 = 100
       npc.技能.口才 = 100
-      npc.基准友好度 += 20
+      npc._基准友好度 += 20
       npc.影响力 = 1500
     },
     ratio: 0.01,
@@ -2212,7 +2245,7 @@ const Families = {
       })
       npc.技能.礼仪 = 100
       npc.技能.口才 = 100
-      npc.基准友好度 += 15
+      npc._基准友好度 += 15
       npc.影响力 = 1000
     },
   },
