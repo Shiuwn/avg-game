@@ -346,7 +346,8 @@ function initNPCs() {
         }
 
         passed = Math.random() < 0.5
-        if (passed && npc != currentNpc) {
+        // 朋友不超过5
+        if (passed && npc != currentNpc && currentNpc.关系.友人.朋友.length < 6 && npc.关系.友人.朋友.length < 6) {
           currentNpc.关系.友人.朋友.push(npc)
           // npc.基准友好度 += 60
           // currentNpc.基准友好度 += 60
@@ -378,11 +379,13 @@ function initNPCs() {
           } else if (!currentNpc.关系.恋人.暗恋) {
             currentNpc.关系.恋人.暗恋 = npc
           } else {
-            currentNpc.关系.恋人.恋人.push(npc)
-            npc.关系.恋人.恋人.push(npc)
-            // currentNpc.爱慕值 += 60
-            // npc.爱慕值 += 60
-            addRelationVal('爱慕值', 60, '', npc, currentNpc)
+            if (currentNpc.关系.恋人.恋人.length <= 5 && npc.关系.恋人.恋人.length <= 5) {
+              currentNpc.关系.恋人.恋人.push(npc)
+              npc.关系.恋人.恋人.push(npc)
+              // currentNpc.爱慕值 += 60
+              // npc.爱慕值 += 60
+              addRelationVal('爱慕值', 60, '', npc, currentNpc)
+            }
           }
         }
 
@@ -400,7 +403,8 @@ function initNPCs() {
         // 仇人 20%
         passed = Math.random() < 0.2
 
-        if (passed) {
+        // 仇人数量不超过5
+        if (passed && currentNpc.关系.仇人.仇人.length < 6) {
           currentNpc.关系.仇人.仇人.push(npc)
         }
 
@@ -706,12 +710,13 @@ function initNPCs() {
 
       each(FamilyList, (_, /**@type {Family} */ otherFamily) => {
         if (otherFamily != family) {
-          if (isPassed(0.2)) {
+          // 世交世仇不超过3
+          if (family.世仇.length < 4 && isPassed(0.2)) {
             family.世仇.push(otherFamily)
             return
           }
           // 0.8 * 0.25 = 0.2
-          if (isPassed(0.25)) {
+          if (family.世交.length < 4 && isPassed(0.25)) {
             family.世交.push(otherFamily)
           }
         }
@@ -2539,9 +2544,9 @@ const Secrets = {
       const part = npc.关系.恋人.暗恋
       let index,
         friends = npc.关系.友人.朋友
-      if (part.关系.恋人.暗恋 === npc) {
-        npc.关系.恋人.恋人 = part
-        part.关系.恋人.恋人 = npc
+      if (part.关系.恋人.暗恋 === npc && npc.关系.恋人.恋人.length < 6 && part.关系.恋人.恋人.length < 6) {
+        npc.关系.恋人.恋人.push(part)
+        part.关系.恋人.恋人.push(npc)
         part.关系.恋人.暗恋 = null
         npc.关系.恋人.暗恋 = null
       } else if ((index = friends.indexOf(part)) > -1) {
