@@ -2311,6 +2311,7 @@ const Families = {
         npc.updateIdentityInner = CharacterGroup.身份特质.监生.give
       }
       Families[type].giveJob(npc)
+      npc.影响力 = 800
     },
   },
   望族: {
@@ -2355,6 +2356,7 @@ const Families = {
         npc.updateIdentityInner = CharacterGroup.身份特质.监生.give
       }
       Families[type].giveJob(npc)
+      npc.影响力 = 600
     },
   },
   名门: {
@@ -2391,6 +2393,7 @@ const Families = {
       npc.技能.绘画 = random({ min: 70, max: 80 })
       npc.技能.写作 = random({ min: 70, max: 80 })
       Families[type].giveJob(npc)
+      npc.影响力 = 400
     },
   },
 
@@ -2428,6 +2431,7 @@ const Families = {
       npc.技能.绘画 = random({ min: 70, max: 80 })
       npc.技能.写作 = random({ min: 70, max: 80 })
       Families[type].giveJob(npc)
+      npc.影响力 = 200
     },
   },
   寒门: {
@@ -2468,6 +2472,7 @@ const Families = {
       npc.技能.道术 = random({ min: 70, max: 80 })
       npc.技能.绘画 = random({ min: 70, max: 80 })
       Families[type].giveJob(npc)
+      npc.影响力 = 100
     },
   },
   贱民: {
@@ -2494,6 +2499,7 @@ const Families = {
       npc.技能.厨艺 = random({ min: 70, max: 80 })
       npc.技能.种植 = random({ min: 70, max: 80 })
       Families[type].giveJob(npc)
+      npc.影响力 = 0
     },
   },
   奴隶: {
@@ -2521,6 +2527,7 @@ const Families = {
       npc.技能.厨艺 = random({ min: 70, max: 80 })
       npc.技能.种植 = random({ min: 70, max: 80 })
       Families[type].giveJob(npc)
+      npc.影响力 = -200
     },
   },
 }
