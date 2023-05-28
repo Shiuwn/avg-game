@@ -420,34 +420,42 @@ function initNPCs() {
     const fPAdults = maleAdults.filter((npc) => npc.性取向 === '异性恋')
 
     each(children, (_, /**@type {NPC} */ currentNpc) => {
-      each(adults, (_, /**@type {NPC} */ npc) => {
-        // 5% 孤儿
-        let passed = Math.random() < 0.05
-        if (passed) {
-          currentNpc.关系.亲属.血缘亲属.父母辈 = []
-          return
-        }
-
-        const hasAgeGap = (npc1, npc2) => Math.abs(npc1.年龄, npc2.年龄) >= 20
-
-        if (
-          npc.性别 === '女' &&
-          npc.性取向 === '异性恋' &&
-          !npc.关系.恋人.配偶 &&
-          hasAgeGap(npc, currentNpc)
-        ) {
-          // 10% 私生子
-          passed = Math.random() < 0.1
-          if (passed) {
-            currentNpc.关系.亲属.血缘亲属.父母辈.push(npc)
-            const len = fPAdults.length
-            const index = random({ min: 0, max: len - 1 })
-            fPAdults[index].关系.恋人.恋人.push(npc)
-            currentNpc.关系.友人.先生 = currentNpc
-            npc.秘密.push('私生子')
-            return
+      // 5% 孤儿
+      let passed = Math.random() < 0.05
+      if (passed) {
+        currentNpc.关系.亲属.血缘亲属.父母辈 = []
+        return
+      }
+      const hasAgeGap = (npc1, npc2) => Math.abs(npc1.年龄 - npc2.年龄) >= 20
+      passed = Math.random() < 0.15
+      // 10% 私生子
+      if (passed) {
+        for (let i = 0; i < adults.length; i++) {
+          const npc = adults[i]
+          if (
+            npc.性别 === '女' &&
+            npc.性取向 === '异性恋' &&
+            !npc.关系.恋人.配偶 &&
+            hasAgeGap(npc, currentNpc)
+          ) {
+            // 10% 私生子
+            passed = Math.random() < 0.1
+            if (passed) {
+              currentNpc.关系.亲属.血缘亲属.父母辈.push(npc)
+              const len = fPAdults.length
+              const index = random({ min: 0, max: len - 1 })
+              fPAdults[index].关系.恋人.恋人.push(npc)
+              currentNpc.关系.友人.先生 = currentNpc
+              npc.秘密.push('私生子')
+              return
+            }
           }
         }
+        return
+      }
+
+      for (let i = 0; i < adults.length; i++) {
+        const npc = adults[i]
         if (
           npc.性取向 === '异性恋' &&
           npc.关系.恋人.配偶 &&
@@ -461,18 +469,23 @@ function initNPCs() {
           part &&
             part.关系.亲属.血缘亲属.亲子.indexOf(currentNpc) < 0 &&
             part.关系.亲属.血缘亲属.亲子.push(currentNpc)
-          currentNpc.关系.亲属.血缘亲属.父母辈.push(npc)
-          part && currentNpc.关系.亲属.血缘亲属.父母辈.push(part)
+          currentNpc.关系.亲属.血缘亲属.父母辈.indexOf(npc) < 0 && currentNpc.关系.亲属.血缘亲属.父母辈.push(npc)
+          part && currentNpc.关系.亲属.血缘亲属.父母辈.indexOf(part) && currentNpc.关系.亲属.血缘亲属.父母辈.push(part)
           if (npc.属性.智略 > part.属性.智略) {
             currentNpc.关系.友人.先生 = npc
           } else {
             currentNpc.关系.友人.先生 = part
           }
-          currentNpc.基准友好度 += 50
-          npc.基准友好度 += 50
-          part.基准友好度 += 50
+          // currentNpc.基准友好度 += 50
+          // npc.基准友好度 += 50
+          // part.基准友好度 += 50
+          addRelationVal('基准友好度', 50, '_基准友好度', currentNpc, npc)
+          addRelationVal('基准友好度', 50, '_基准友好度', currentNpc, part)
+          addRelationVal('基准友好度', 50, '_基准友好度', npc, part)
+          return
         }
-      })
+      }
+
       each(Looks, (key) => {
         giveLook(currentNpc, key)
       })
