@@ -813,7 +813,7 @@ const createAttr = (attrs) => {
         return attrs[key]
       },
       set(val) {
-        attrs[key] = Math.max(0, val)
+        attrs[key] = Math.round(Math.max(0, val))
       }
     })
   }
